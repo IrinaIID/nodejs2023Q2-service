@@ -34,7 +34,10 @@ export class TrackService {
     if (index < 0) {
       return '404'
     } else {
-      dbTracks[index] = trackDto;
+      dbTracks[index].name = trackDto.name;
+      dbTracks[index].artistId = trackDto.artistId || null;
+      dbTracks[index].albumId = trackDto.albumId || null;
+      dbTracks[index].duration = trackDto.duration;
       return dbTracks[index]
     }
   }
@@ -49,6 +52,6 @@ export class TrackService {
       return '204'
     }
   }
-  
+
 }
 

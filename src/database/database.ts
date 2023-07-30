@@ -1,4 +1,4 @@
-import { Track, User } from "src/interfaces/interfaces";
+import { Artist, Track, User } from "src/interfaces/interfaces";
 import { v4 as uuidv4 } from 'uuid';
 
 const testUser: User = {
@@ -21,5 +21,10 @@ const testTrack = {
 }
 export const dbTracks: Track[] = [testTrack]
 
-
+const testArtist = {
+  id: uuidv4(),
+  name: 'test-artist',
+  grammy: true
+}
+export const dbArtists: Artist[] = [testArtist]
 
