@@ -2,19 +2,9 @@ import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Pos
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
-import { validate as uuidValidate } from 'uuid'
-import express, {Request, Response} from 'express';
+import { validate as uuidValidate } from 'uuid';
+import { Response } from 'express';
 
-
-
-// interface User {
-//   id: string; // uuid v4
-//   login: string;
-//   password: string;
-//   version: number; // integer number, increments on update
-//   createdAt: number; // timestamp of creation
-//   updatedAt: number; // timestamp of last update
-// }
 
 @Controller('user')
 export class UserController {
@@ -46,23 +36,36 @@ export class UserController {
   }
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @Header('Cache-Control', 'none')
-  createUser(@Body() createUserDto: CreateUserDto) {
-    return `login: ${createUserDto.login}
-    password ${createUserDto.password}`
+  // @Header('Cache-Control', 'none')
+  createUser(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
+    if (!createUserDto.login || !createUserDto.password) {
+      res.status(HttpStatus.BAD_REQUEST);
+      return
+    } else {
+      const newUser = this.userService.createUser(createUserDto);
+      res.status(HttpStatus.CREATED);
+      return JSON.stringify(newUser)
+    }
   }
 
   @Delete(':id')
-  deleteUser(@Param('id') id: string) {
-    return `remove ${id}`
+  deleteUser(@Param('id') id: string, @Res({ passthrough: true }) res: Response) {
+    if (!uuidValidate(id)) {
+      res.status(HttpStatus.BAD_REQUEST)
+    } else {
+      const status = this.userService.deleteUser(id);
+      status === '404' ? res.status(HttpStatus.NOT_FOUND) : res.status(HttpStatus.NO_CONTENT);
+    }
   }
 
   @Put(':id')
-  updateUser(@Body() updateUserDto: UpdatePasswordDto, @Param('id') id: string) {
-    return `prev: ${updateUserDto.oldPassword}
-    new: ${updateUserDto.newPassword}
-    id: ${id}`
+  updateUser(@Body() updateUserDto: UpdatePasswordDto, @Param('id') id: string, @Res({ passthrough: true }) res: Response) {
+    if (!uuidValidate(id)) {
+      res.status(HttpStatus.BAD_REQUEST)
+    } else {
+      const status = this.userService.updateUser(updateUserDto, id);
+      status === '404' ? res.status(HttpStatus.NOT_FOUND) : status === '403' ? res.status(HttpStatus.FORBIDDEN) : res.status(HttpStatus.OK);
+    }
   }
 
 }
