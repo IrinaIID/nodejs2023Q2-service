@@ -1,4 +1,4 @@
-import { Album, Artist, Track, User } from "src/interfaces/interfaces";
+import { Album, Artist, FavoritesResponse, Track, User } from "src/interfaces/interfaces";
 import { v4 as uuidv4 } from 'uuid';
 
 const testUser: User = {
@@ -35,3 +35,9 @@ const testAlbum = {
   artistId: null
 }
 export const dbAlbums: Album[] = [testAlbum]
+
+export const dbFavs: FavoritesResponse = {
+  artists: [],
+  albums: [],
+  tracks: []
+}
