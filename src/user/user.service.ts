@@ -37,12 +37,9 @@ export class UserService {
     } else if (user.password !== userDto.oldPassword) {
       return '403'
     } else {
-      dbUsers.map(user => {
-        if (user.id === id) {
-          user.password = userDto.newPassword
-        }
-      })
-      return '200'
+      const index = dbUsers.findIndex(user => user.id === id);
+      dbUsers[index].password = userDto.newPassword;
+      return dbUsers[index]
     }
   }
 

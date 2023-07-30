@@ -15,7 +15,6 @@ export class UserController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  // @Redirect('http://google.com', 301)
   getAllUsers(): User[] | [] {
     const users = this.userService.getAllUsers();
     return users
@@ -37,7 +36,6 @@ export class UserController {
   }
 
   @Post()
-  // @Header('Cache-Control', 'none')
   createUser(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
     if (!createUserDto.login || !createUserDto.password) {
       res.status(HttpStatus.BAD_REQUEST);
@@ -61,11 +59,21 @@ export class UserController {
 
   @Put(':id')
   updateUser(@Body() updateUserDto: UpdatePasswordDto, @Param('id') id: string, @Res({ passthrough: true }) res: Response) {
-    if (!uuidValidate(id)) {
+    if (!updateUserDto.oldPassword || !updateUserDto.newPassword) {
+      res.status(HttpStatus.BAD_REQUEST);
+    } else if (!uuidValidate(id)) {
       res.status(HttpStatus.BAD_REQUEST)
     } else {
       const status = this.userService.updateUser(updateUserDto, id);
-      status === '404' ? res.status(HttpStatus.NOT_FOUND) : status === '403' ? res.status(HttpStatus.FORBIDDEN) : res.status(HttpStatus.OK);
+      if (status === '404') {
+        res.status(HttpStatus.NOT_FOUND)
+      } else if (status === '403') {
+        res.status(HttpStatus.FORBIDDEN)
+      } else {
+        res.status(HttpStatus.OK);
+        return status
+      }
     }
   }
+
 }
