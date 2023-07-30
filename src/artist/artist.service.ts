@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { dbArtists } from 'src/database/database';
+import { dbAlbums, dbArtists, dbFavs, dbTracks } from 'src/database/database';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdateArtistDto } from './dto/update-artist.dto';
@@ -42,7 +42,15 @@ export class ArtistService {
     if (index < 0) {
       return '404'
     } else {
-      dbArtists.splice(index, 1)
+      dbArtists.splice(index, 1);
+      const trackIndex = dbTracks.findIndex(track => track.artistId === id);
+      if (trackIndex > 0) {
+        dbTracks[trackIndex].artistId = null
+      }
+      const albumIndex = dbAlbums.findIndex(album => album.artistId === id);
+      if (albumIndex > 0) {
+        dbAlbums[albumIndex].artistId = null
+      }
       return '204'
     }
   }
