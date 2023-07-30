@@ -1,7 +1,20 @@
-import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Post, Put} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Post, Put, Res} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
+import { validate as uuidValidate } from 'uuid'
+import express, {Request, Response} from 'express';
+
+
+
+// interface User {
+//   id: string; // uuid v4
+//   login: string;
+//   password: string;
+//   version: number; // integer number, increments on update
+//   createdAt: number; // timestamp of creation
+//   updatedAt: number; // timestamp of last update
+// }
 
 @Controller('user')
 export class UserController {
@@ -10,15 +23,26 @@ export class UserController {
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   // @Redirect('http://google.com', 301)
   getAllUsers() {
-    const a = this.userService.getAllUsers()
-    return a[0].login
+    const users = this.userService.getAllUsers();
+    return JSON.stringify(users)
   }
 
   @Get(':id')
-  getUser(@Param('id') id: string) {
-    return `it's ${id}`
+  getUser(@Param('id') id: string, @Res({ passthrough: true }) res: Response) {
+    if (!uuidValidate(id)) {
+      res.status(HttpStatus.BAD_REQUEST)
+    } else {
+      const user = this.userService.getUser(id);
+      if(!user) {
+        res.status(HttpStatus.NOT_FOUND)
+      } else {
+        res.status(HttpStatus.OK);
+        return JSON.stringify(user)
+      }
+    }
   }
 
   @Post()
