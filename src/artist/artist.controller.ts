@@ -36,7 +36,7 @@ export class ArtistController {
   }
 
   @Post()
-  createArtist(@Body() createArtistDto: CreateArtistDto, @Res({ passthrough: true }) res: Response): any {
+  createArtist(@Body() createArtistDto: CreateArtistDto, @Res({ passthrough: true }) res: Response): Artist {
     if (!createArtistDto.grammy || !createArtistDto.name) {
       res.status(HttpStatus.BAD_REQUEST);
       return
@@ -48,7 +48,7 @@ export class ArtistController {
   }
 
   @Put(':id')
-  updateUser(@Body() updateArtistDto: UpdateArtistDto, @Param('id') id: string, @Res({ passthrough: true }) res: Response): any {
+  updateArtist(@Body() updateArtistDto: UpdateArtistDto, @Param('id') id: string, @Res({ passthrough: true }) res: Response): Artist {
     if (!updateArtistDto.grammy || !updateArtistDto.name) {
       res.status(HttpStatus.BAD_REQUEST);
     } else if (!uuidValidate(id)) {
@@ -65,7 +65,7 @@ export class ArtistController {
   }
 
   @Delete(':id')
-  deleteUser(@Param('id') id: string, @Res({ passthrough: true }) res: Response) {
+  deleteArtist(@Param('id') id: string, @Res({ passthrough: true }) res: Response) {
     if (!uuidValidate(id)) {
       res.status(HttpStatus.BAD_REQUEST)
     } else {
