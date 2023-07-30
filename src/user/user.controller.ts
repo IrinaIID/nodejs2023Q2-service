@@ -4,6 +4,7 @@ import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { validate as uuidValidate } from 'uuid';
 import { Response } from 'express';
+import { User } from 'src/interfaces/interfaces';
 
 
 @Controller('user')
@@ -15,13 +16,13 @@ export class UserController {
   @Get()
   @HttpCode(HttpStatus.OK)
   // @Redirect('http://google.com', 301)
-  getAllUsers() {
+  getAllUsers(): User[] | [] {
     const users = this.userService.getAllUsers();
-    return JSON.stringify(users)
+    return users
   }
 
   @Get(':id')
-  getUser(@Param('id') id: string, @Res({ passthrough: true }) res: Response) {
+  getUser(@Param('id') id: string, @Res({ passthrough: true }) res: Response): User {
     if (!uuidValidate(id)) {
       res.status(HttpStatus.BAD_REQUEST)
     } else {
@@ -30,7 +31,7 @@ export class UserController {
         res.status(HttpStatus.NOT_FOUND)
       } else {
         res.status(HttpStatus.OK);
-        return JSON.stringify(user)
+        return user
       }
     }
   }
@@ -44,7 +45,7 @@ export class UserController {
     } else {
       const newUser = this.userService.createUser(createUserDto);
       res.status(HttpStatus.CREATED);
-      return JSON.stringify(newUser)
+      return newUser
     }
   }
 
@@ -67,5 +68,4 @@ export class UserController {
       status === '404' ? res.status(HttpStatus.NOT_FOUND) : status === '403' ? res.status(HttpStatus.FORBIDDEN) : res.status(HttpStatus.OK);
     }
   }
-
 }
