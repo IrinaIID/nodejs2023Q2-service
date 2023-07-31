@@ -1,7 +1,7 @@
-export interface CreateTrackDto {
-  id: string; // uuid v4
+export class CreateTrackDto {
+  id: string;
   name: string;
-  artistId: string | null; // refers to Artist
-  albumId: string | null; // refers to Album
-  duration: number; // integer number
+  artistId: string | null;
+  albumId: string | null;
+  duration: number;
 }
